@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboards de Asistencia · LLDM Hidalgo</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: #f4f7f4;
+      color: #1a2e1a;
+      min-height: 100vh;
+      padding: 2rem 1rem;
+    }
+
+    /* ── Header ── */
+    header {
+      background: #fff;
+      border: 2px solid #a8d5b8;
+      color: #1b5e35;
+      padding: 1.5rem 2rem;
+      border-radius: 14px;
+      margin-bottom: 2rem;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: .75rem;
+      max-width: 700px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .logo-lldm-wrap {
+      background: linear-gradient(135deg, #1b5e35, #2e7d52);
+      border-radius: 50%;
+      width: 80px;
+      height: 80px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 3px 10px rgba(27,94,53,.25);
+    }
+
+    .logo-lldm {
+      height: 60px;
+      width: auto;
+      filter: drop-shadow(0 1px 3px rgba(0,0,0,.2));
+    }
+
+    header h1 { font-size: 1.6rem; font-weight: 700; letter-spacing: .5px; color: #1b5e35; }
+    header p  { font-size: .9rem; color: #2e7d52; }
+
+    /* ── Zonas ── */
+    .zonas {
+      display: flex;
+      flex-direction: column;
+      gap: .75rem;
+      max-width: 700px;
+      margin: 0 auto;
+    }
+
+    .zona-card {
+      background: #fff;
+      border: 1.5px solid #a8d5b8;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .zona-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 1.25rem;
+      cursor: pointer;
+      user-select: none;
+      transition: background .15s;
+    }
+
+    .zona-header:hover { background: #f0faf4; }
+
+    .zona-left {
+      display: flex;
+      align-items: center;
+      gap: .75rem;
+    }
+
+    .zona-badge {
+      font-size: .7rem;
+      font-weight: 700;
+      letter-spacing: .6px;
+      text-transform: uppercase;
+      color: #fff;
+      background: #2e7d52;
+      border-radius: 20px;
+      padding: .25rem .75rem;
+      white-space: nowrap;
+    }
+
+    .zona-badge.distrito { background: #c9a227; }
+
+    .zona-nombre {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #1b5e35;
+    }
+
+    .zona-count {
+      font-size: .78rem;
+      color: #888;
+    }
+
+    .zona-chevron {
+      font-size: 1rem;
+      color: #2e7d52;
+      transition: transform .25s;
+    }
+
+    .zona-card.open .zona-chevron { transform: rotate(180deg); }
+
+    /* ── Lista de dashboards ── */
+    .zona-body {
+      display: none;
+      border-top: 1px solid #e0ede6;
+      padding: .5rem 0;
+    }
+
+    .zona-card.open .zona-body { display: block; }
+
+    .dash-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: .7rem 1.25rem;
+      text-decoration: none;
+      color: inherit;
+      transition: background .15s;
+      gap: 1rem;
+    }
+
+    .dash-item:hover { background: #f0faf4; }
+
+    .dash-fecha {
+      font-size: .9rem;
+      font-weight: 600;
+      color: #1b5e35;
+    }
+
+    .dash-meta {
+      font-size: .78rem;
+      color: #777;
+    }
+
+    .dash-arrow {
+      font-size: .82rem;
+      color: #c9a227;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .empty-msg {
+      padding: .9rem 1.25rem;
+      font-size: .85rem;
+      color: #aaa;
+      font-style: italic;
+    }
+
+    /* ── Footer ── */
+    footer {
+      text-align: center;
+      margin-top: 2.5rem;
+      font-size: .78rem;
+      color: #2e7d52;
+      font-weight: 600;
+      letter-spacing: .4px;
+    }
+
+    @media (max-width: 480px) {
+      header h1 { font-size: 1.3rem; }
+      .zona-nombre { font-size: .92rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="logo-lldm-wrap">
+      <img class="logo-lldm" src="imgs/LOGO LLDM BLANCO.png" alt="LLDM">
+    </div>
+    <h1>Dashboards de Asistencia</h1>
+    <p>Hidalgo · Selecciona un distrito para ver los reportes disponibles</p>
+  </header>
+
+  <div class="zonas" id="zonas">
+    <!-- Los distritos se agregarán aquí conforme se generen dashboards -->
+    <div style="text-align:center;color:#aaa;font-size:.9rem;padding:2rem 0;font-style:italic">
+      Próximamente — los dashboards aparecerán aquí al generarse.
+    </div>
+  </div>
+
+  <footer>Control de Asistencia 2026 · Hidalgo</footer>
+
+  <script>
+    function toggle(card) {
+      card.classList.toggle('open');
+    }
+  </script>
+
+</body>
+</html>
