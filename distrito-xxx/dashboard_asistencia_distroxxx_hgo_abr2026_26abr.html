@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Asistencia Distrito XXX — HGO — 26 Abr 2026</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+
+:root{
+  --gd:#1b5e35;--gm:#2e7d52;--gl:#e8f5ee;--gb:#a8d5b8;
+  --go:#c9a227;--gol:#fdf3d7;--gob:#e8cc7a;--god:#8a6d0b;
+  --am:#b7770d;--r:#c0392b;--tx:#1a1a1a;--mu:#6b7280;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:#f4f6f4;color:var(--tx);padding:1.5rem 1.25rem;}
+.accent-bar{height:4px;background:linear-gradient(90deg,#1b5e35,#2e7d52,#c9a227);border-radius:2px;margin-bottom:1.5rem;}
+/* Header */
+.hdr{display:flex;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;gap:1rem;margin-bottom:1.5rem;}
+.hdr-left{display:flex;flex-direction:column;gap:.45rem;}
+.hdr-eyebrow{font-size:.72rem;font-weight:700;letter-spacing:.12em;color:var(--gm);text-transform:uppercase;}
+.hdr-title{font-size:1.55rem;font-weight:800;line-height:1.15;color:var(--gd);}
+.hdr-title span{color:var(--go);}
+.hdr-pills{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.2rem;}
+.hdr-pill{display:inline-flex;align-items:center;gap:.35rem;padding:.28rem .75rem;border-radius:999px;font-size:.8rem;font-weight:700;}
+.pill-g{background:var(--gl);color:var(--gd);border:1px solid var(--gb);}
+.pill-o{background:var(--gol);color:var(--god);border:1px solid var(--gob);}
+.hdr-meta{font-size:.78rem;color:var(--mu);}
+.btn-print{display:inline-flex;align-items:center;gap:.4rem;padding:.45rem 1rem;background:var(--gol);color:var(--god);border:1px solid var(--gob);border-radius:8px;font-size:.8rem;font-weight:600;cursor:pointer;white-space:nowrap;}
+.btn-print:hover{background:var(--gob);}
+/* Metrics */
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1.5rem;}
+.mc{background:#fff;border-radius:12px;padding:1.1rem 1rem;box-shadow:0 1px 4px rgba(0,0,0,.06);border-left:4px solid var(--gm);}
+.mc.gold{border-left-color:var(--go);}
+.mc-lbl{font-size:.7rem;font-weight:600;color:var(--mu);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.35rem;}
+.mc-val{font-size:1.55rem;font-weight:800;color:var(--gd);}
+.mc.gold .mc-val{color:var(--god);}
+.mc-unit{font-size:.75rem;font-weight:600;color:var(--go);margin-left:.2rem;}
+/* Charts */
+.charts-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem;}
+.chart-card{background:#fff;border-radius:12px;padding:1.1rem 1rem;box-shadow:0 1px 4px rgba(0,0,0,.06);}
+.chart-card.full{grid-column:1/-1;}
+.chart-card.donut-card{grid-column:auto;}
+.chart-title{font-size:.82rem;font-weight:700;color:var(--gd);margin-bottom:.5rem;}
+.chart-sub{font-size:.7rem;color:var(--mu);margin-bottom:.75rem;}
+.chart-wrap{position:relative;height:220px;}
+.chart-wrap.tall{height:260px;}
+.chart-legend{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.6rem;font-size:.68rem;color:var(--mu);}
+.chart-legend span{display:inline-flex;align-items:center;gap:.3rem;}
+.dot{width:10px;height:10px;border-radius:50%;display:inline-block;}
+.dn{background:var(--gm);}
+.da{background:var(--am);}
+.dl{background:var(--r);}
+.dg{background:var(--go);}
+/* Iglesias */
+.section-title{font-size:.85rem;font-weight:700;color:var(--gd);margin-bottom:.75rem;display:flex;align-items:center;gap:.5rem;}
+.ig-hint{font-size:.72rem;color:var(--mu);font-weight:400;}
+.ig-list{display:flex;flex-direction:column;gap:.4rem;margin-bottom:1.5rem;}
+.ig-row{background:#fff;border-radius:10px;box-shadow:0 1px 3px rgba(0,0,0,.06);overflow:hidden;}
+.ig-hdr{display:flex;align-items:center;gap:.75rem;padding:.65rem .9rem;cursor:pointer;user-select:none;}
+.ig-hdr:hover{background:var(--gl);}
+.ig-clave{font-size:.68rem;font-weight:700;background:var(--gl);color:var(--gd);padding:.15rem .45rem;border-radius:4px;white-space:nowrap;}
+.ig-name{font-size:.85rem;font-weight:600;color:var(--tx);flex:1;}
+.ig-bar-wrap{flex:1;max-width:140px;height:6px;background:#e5e7eb;border-radius:3px;overflow:hidden;}
+.ig-bar{height:100%;background:var(--gm);border-radius:3px;}
+.ig-count{font-size:.82rem;font-weight:700;color:var(--gd);min-width:28px;text-align:right;}
+.ig-chev{font-size:.7rem;color:var(--mu);margin-left:.25rem;transition:transform .2s;}
+.ig-row.open .ig-chev{transform:rotate(180deg);}
+.ig-detail{display:none;border-top:1px solid #f0f0f0;}
+.ig-row.open .ig-detail{display:block;}
+.ig-table{width:100%;border-collapse:collapse;font-size:.78rem;}
+.ig-table th{background:var(--gl);color:var(--gd);font-weight:700;padding:.4rem .7rem;text-align:left;font-size:.68rem;text-transform:uppercase;letter-spacing:.05em;}
+.ig-table th.tc{text-align:center;}
+.ig-table td{padding:.38rem .7rem;border-bottom:1px solid #f5f5f5;color:var(--tx);}
+.ig-table td.tc{text-align:center;}
+.ig-table tr:last-child td{border-bottom:none;}
+.ig-table tr:hover td{background:#fafafa;}
+/* Hora badges */
+.tn{color:var(--mu);}
+.ta{color:var(--am);font-weight:600;}
+.tl{color:var(--r);font-weight:600;}
+/* Grado badges */
+.grado{font-size:.68rem;padding:.12rem .4rem;border-radius:4px;font-weight:600;}
+.grado-coro{background:var(--gl);color:var(--gd);}
+.grado-dir{background:var(--gol);color:var(--god);}
+.grado-staff{background:#f3f4f6;color:#374151;}
+/* Staff */
+.staff-section{background:var(--gol);border:1px solid var(--gob);border-radius:12px;padding:1.1rem 1rem;margin-bottom:1.5rem;}
+.staff-title{font-size:.82rem;font-weight:700;color:var(--god);margin-bottom:.75rem;text-transform:uppercase;letter-spacing:.07em;}
+.staff-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:.4rem;}
+.staff-item{display:flex;justify-content:space-between;font-size:.78rem;background:#fff8e7;border-radius:6px;padding:.35rem .6rem;}
+.staff-nombre{color:var(--tx);font-weight:500;}
+.staff-hora{color:var(--god);font-weight:700;}
+/* Duplicates notice */
+.dup-notice{background:#fff8e7;border:1px solid var(--gob);border-radius:8px;padding:.7rem 1rem;margin-bottom:1rem;font-size:.75rem;color:var(--god);}
+/* Responsive */
+@media(max-width:640px){
+  .metrics{grid-template-columns:repeat(2,1fr);}
+  .charts-row{grid-template-columns:1fr;}
+  .chart-card.donut-card{grid-column:auto;}
+  body{padding:1rem .75rem;}
+  canvas{max-height:180px;}
+}
+/* Print */
+@media print{
+  .btn-print,.accent-bar{display:none;}
+  body{background:#fff;padding:.5rem;}
+  .ig-detail{display:block!important;}
+  .ig-hdr{cursor:default;}
+  .mc{box-shadow:none;border:1px solid #e5e7eb;}
+  .chart-card{box-shadow:none;border:1px solid #e5e7eb;}
+  .ig-row{box-shadow:none;border:1px solid #e5e7eb;}
+  .charts-row{page-break-inside:avoid;}
+  .ig-list{gap:.25rem;}
+}
+
+</style>
+</head>
+<body>
+<div class="accent-bar"></div>
+<div class="dup-notice">⚠ Se eliminaron 6 registros duplicados — se conservó la entrada más temprana de cada persona.</div>
+<!-- HEADER -->
+<div class="hdr">
+  <div class="hdr-left">
+    <div class="hdr-eyebrow">Coro Distrital &nbsp;·&nbsp; Hidalgo</div>
+    <div class="hdr-title">Asistencia Distrito XXX &nbsp;<span>26 Abr 2026</span></div>
+    <div class="hdr-pills">
+      <span class="hdr-pill pill-g">232 asistentes</span>
+      <span class="hdr-pill pill-o">16 iglesias</span>
+    </div>
+    <div class="hdr-meta">Inicio: 13:00 Hrs &nbsp;·&nbsp; Primer registro: 09:14 Hrs &nbsp;·&nbsp; Último: 13:42 Hrs</div>
+  </div>
+  <button class="btn-print" onclick="window.print()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>Imprimir / PDF</button>
+</div>
+
+<!-- METRICS -->
+<div class="metrics">
+  <div class="mc"><div class="mc-lbl">Total asistentes</div><div class="mc-val">232</div></div>
+  <div class="mc"><div class="mc-lbl">Iglesias</div><div class="mc-val">16</div></div>
+  <div class="mc gold"><div class="mc-lbl">Promedio de entrada</div><div class="mc-val">12:31 <span class="mc-unit">Hrs</span></div></div>
+  <div class="mc gold"><div class="mc-lbl">Bloque pico</div><div class="mc-val">13:10 <span class="mc-unit">Hrs</span></div></div>
+</div>
+
+<!-- CHARTS ROW 1 -->
+<div class="charts-row">
+  <div class="chart-card full">
+    <div class="chart-title">Entradas por bloque de 10 minutos</div>
+    <div class="chart-sub">Barras por volumen coloreadas por zona horaria · Línea dorada = tendencia (promedio móvil, ventana 3)</div>
+    <div class="chart-wrap tall"><canvas id="chart10"></canvas></div>
+    <div class="chart-legend">
+      <span><span class="dot dn"></span> Puntual (antes de 14:00 Hrs)</span>
+      <span><span class="dot da"></span> Retardo (≥ 14:00 Hrs)</span>
+      <span><span class="dot dl"></span> Tarde (≥ 15:00 Hrs)</span>
+      <span><span class="dot dg"></span> Tendencia</span>
+    </div>
+  </div>
+</div>
+
+<!-- CHARTS ROW 2 -->
+<div class="charts-row">
+  <div class="chart-card">
+    <div class="chart-title">Entradas por franja de 30 minutos</div>
+    <div class="chart-sub">Total de personas por período</div>
+    <div class="chart-wrap"><canvas id="chart30"></canvas></div>
+  </div>
+  <div class="chart-card donut-card">
+    <div class="chart-title">Distribución por grado</div>
+    <div class="chart-sub">Composición del evento</div>
+    <div class="chart-wrap"><canvas id="chartGrado"></canvas></div>
+  </div>
+</div>
+
+<!-- IGLESIAS -->
+<div class="section-title">Iglesias <span class="ig-hint">— clic en una iglesia para ver sus asistentes</span></div>
+<div class="ig-list">
+<div class="ig-row"><div class="ig-hdr"><span class="ig-clave">MXHG-03</span><span class="ig-name">Pachuca - San Cayetano</span><div class="ig-bar-wrap"><div class="ig-bar" style="width:100%"></div></div><span class="ig-count">50</span><span class="ig-chev">▼</span></div><div class="ig-detail" id="det-0"></div></div>
+<div class="ig-row"><div class="ig-hdr"><span class="ig-clave">MXHG-04</span><span class="ig-name">Tulancingo - Guadalupe</span><div class="ig-bar-wrap"><div class="ig-bar" style="width:80%"></div></div><span class="ig-count">40</span><span class="ig-chev">▼</span></div><div class="ig-detail" id="det-1"></div></div>
+<div class="ig-row"><div class="ig-hdr"><span class="ig-clave">MXHG-06</span><span class="ig-name">Santiago Tulantepec - Pedregal De San Jose</span><div class="ig-bar-wrap"><div class="ig-bar" style="width:46%"></div></div><span class="ig-count">23</span><span class="ig-chev">▼</span></div><div class="ig-detail" id="det-2"></div></div>
+<div class="ig-row"><div class="ig-hdr"><span class="ig-clave">MXHG-15</span><span class="ig-name">Tizayuca - El Carmen</span><div class="ig-bar-wrap"><div class="ig-bar" style="width:40%"></div></div><span class="ig-count">20</span><span class="ig-chev">▼</span></div><div class="ig-detail" id="det-3"></div></div>
+<div class="ig-row"><div class="ig-hdr"><span class="ig-clave">MXHG-07</span><span class="ig-name">Zimapan - Centro</span><div class="ig-bar-wrap"><div class="ig-bar" style="width:36%"></div></div><span class="ig-count">18</span><span class="ig-chev">▼</span></div><div class="ig-detail" id="det-4"></div></div>
+<div class="ig-row"><div class="ig-hdr"><span class="ig-clave">MXHG-05</span><span class="ig-name">Huejutla - El Zapote</span><div class="ig-bar-wrap"><div class="ig-bar" style="width:28%"></div></div><span class="ig-count">14</span><span class="ig-chev">▼</span></div><div class="ig-detail" id="det-5"></div></div>
+<div class="ig-row"><div class="ig-hdr"><span class="ig-clave">MXHG-13</span><span class="ig-name">Huasca De Ocampo - El Tizal</span><div class="ig-bar-wrap"><div class="ig-bar" style="width:24%"></div></div><span class="ig-count">12</span><span class="ig-chev">▼</span></div><div class="ig-detail" id="det-6"></div></div>
+<div class="ig-row"><div class="ig-hdr"><span class="ig-clave">MXHG-17</span><span class="ig-name">Puerto Dexthi</span><div class="ig-bar-wrap"><div class="ig-bar" style="width:20%"></div></div><span class="ig-count">10</span><span class="ig-chev">▼</span></div><div class="ig-detail" id="det-7"></div></div>
+<div class="ig-row"><div class="ig-hdr"><span class="ig-clave">MXHG-20</span><span class="ig-name">Pachuca - Palmitas</span><div class="ig-bar-wrap"><div class="ig-bar" style="width:18%"></div></div><span class="ig-count">9</span><span class="ig-chev">▼</span></div><div class="ig-detail" id="det-8"></div></div>
+<div class="ig-row"><div class="ig-hdr"><span class="ig-clave">MXHG-09</span><span class="ig-name">Pachuca - Nueva Estrella</span><div class="ig-bar-wrap"><div class="ig-bar" style="width:18%"></div></div><span class="ig-count">9</span><span class="ig-chev">▼</span></div><div class="ig-detail" id="det-9"></div></div>
+<div class="ig-row"><div class="ig-hdr"><span class="ig-clave">MXHG-16</span><span class="ig-name">El Susto</span><div class="ig-bar-wrap"><div class="ig-bar" style="width:16%"></div></div><span class="ig-count">8</span><span class="ig-chev">▼</span></div><div class="ig-detail" id="det-10"></div></div>
+<div class="ig-row"><div class="ig-hdr"><span class="ig-clave">MXHG-12</span><span class="ig-name">Chapatongo - Huizachal</span><div class="ig-bar-wrap"><div class="ig-bar" style="width:8%"></div></div><span class="ig-count">4</span><span class="ig-chev">▼</span></div><div class="ig-detail" id="det-11"></div></div>
+<div class="ig-row"><div class="ig-hdr"><span class="ig-clave">MXHG-21</span><span class="ig-name">Mineral De La Reforma - Providencia</span><div class="ig-bar-wrap"><div class="ig-bar" style="width:8%"></div></div><span class="ig-count">4</span><span class="ig-chev">▼</span></div><div class="ig-detail" id="det-12"></div></div>
+<div class="ig-row"><div class="ig-hdr"><span class="ig-clave">MXHG-02</span><span class="ig-name">Tlahuelilpan - Centro</span><div class="ig-bar-wrap"><div class="ig-bar" style="width:8%"></div></div><span class="ig-count">4</span><span class="ig-chev">▼</span></div><div class="ig-detail" id="det-13"></div></div>
+<div class="ig-row"><div class="ig-hdr"><span class="ig-clave">MXHG-18</span><span class="ig-name">Huautla - Barrio Del Salto</span><div class="ig-bar-wrap"><div class="ig-bar" style="width:8%"></div></div><span class="ig-count">4</span><span class="ig-chev">▼</span></div><div class="ig-detail" id="det-14"></div></div>
+<div class="ig-row"><div class="ig-hdr"><span class="ig-clave">MXHG-08</span><span class="ig-name">Tasquillo - Calvario Bajo</span><div class="ig-bar-wrap"><div class="ig-bar" style="width:6%"></div></div><span class="ig-count">3</span><span class="ig-chev">▼</span></div><div class="ig-detail" id="det-15"></div></div>
+</div>
+
+
+
+<script>
+var DATA=[{"iglesia":"PACHUCA - SAN CAYETANO","clave":"MXHG-03","count":50,"personas":[{"nombre":"Abelina Jimenez Lopez","hora":"09:14","grado":"CORO"},{"nombre":"Berenice Romero Velázquez","hora":"09:15","grado":"CORO"},{"nombre":"Daniel Abinoam Tolentino Hernández","hora":"09:15","grado":"DIRECTOR"},{"nombre":"Jeudi Azael Moreno Meza","hora":"09:15","grado":"CORO"},{"nombre":"Chris David Lerma Gallegos","hora":"09:16","grado":"CORO"},{"nombre":"Maria Dolores Ortega López","hora":"09:16","grado":"CORO"},{"nombre":"Harim Rosmar Bustos Gonzalez","hora":"09:17","grado":"CORO"},{"nombre":"Brenda Flores López","hora":"09:18","grado":"CORO"},{"nombre":"Patricia Lopéz Gutierrez","hora":"09:19","grado":"CORO"},{"nombre":"Loammi Ferrusca Arriaga","hora":"09:19","grado":"CORO"},{"nombre":"Miriam Cruz Hernández","hora":"09:20","grado":"CORO"},{"nombre":"Ana Karen Serrano Godínez","hora":"09:23","grado":"CORO"},{"nombre":"Amsi Bigvai Lugo Serrano","hora":"09:23","grado":"CORO"},{"nombre":"Alfonso Vite Hernandez","hora":"09:23","grado":"CORO"},{"nombre":"Amsi Ezbai Gonzáles Molina","hora":"09:23","grado":"CORO"},{"nombre":"Dina Molina Paredes","hora":"09:23","grado":"CORO"},{"nombre":"Everarda Martínez Hernández","hora":"09:23","grado":"CORO"},{"nombre":"Sonia Bravo Avila","hora":"09:23","grado":"CORO"},{"nombre":"Vasti Elienai Hernández Icazbalceta","hora":"09:24","grado":"CORO"},{"nombre":"Leonor Hernández Vargas","hora":"09:24","grado":"CORO"},{"nombre":"Izamar Pérez Zuñiga","hora":"09:24","grado":"CORO"},{"nombre":"Vihaney Kereli Rosales Sanchez","hora":"09:24","grado":"CORO"},{"nombre":"Itamar Leyva Martínez","hora":"09:24","grado":"CORO"},{"nombre":"Jepthé Icazbalceta Flores","hora":"09:24","grado":"CORO"},{"nombre":"Moisés Ahalí Martínez León","hora":"09:25","grado":"CORO"},{"nombre":"Juventino Martínez Hernández","hora":"09:25","grado":"CORO"},{"nombre":"Anacleta Perez Aguilar","hora":"09:26","grado":"CORO"},{"nombre":"Belen Madai Flores Hernández","hora":"09:26","grado":"CORO"},{"nombre":"Hilaria Desiderio Torivio","hora":"09:29","grado":"CORO"},{"nombre":"Yarely Hernández Desiderio","hora":"09:30","grado":"CORO"},{"nombre":"Victor Hernández Desiderio","hora":"09:30","grado":"CORO"},{"nombre":"Noe Vergara Pérez","hora":"09:30","grado":"CORO"},{"nombre":"Elisua Hernández Arenas","hora":"09:30","grado":"CORO"},{"nombre":"Jadua Leyva Martínez","hora":"09:30","grado":"CORO"},{"nombre":"Alba Hernández Cruz","hora":"09:30","grado":"CORO"},{"nombre":"Joab Abiezer Hernández Ramírez","hora":"09:30","grado":"CORO"},{"nombre":"Perla Jerusalen Flores Hernández","hora":"09:31","grado":"CORO"},{"nombre":"Modesto de los Santos Sánchez","hora":"09:34","grado":"CORO"},{"nombre":"Joram Naim De los Santos Hernández","hora":"09:34","grado":"CORO"},{"nombre":"Jeriel Mizrraim Alvarado Martínez","hora":"10:14","grado":"CORO"},{"nombre":"Joram Edrei Alvarado Martinez","hora":"10:14","grado":"CORO"},{"nombre":"Angel Jebneel Flores Iturbide","hora":"10:14","grado":"CORO"},{"nombre":"Noa Belem Alvarado de la Cruz","hora":"12:21","grado":"CORO"},{"nombre":"Libna Abizag Velasco García","hora":"12:22","grado":"CORO"},{"nombre":"Aida Araceli Alvarado Avíla","hora":"12:22","grado":"CORO"},{"nombre":"Abigahil Maya Moreno","hora":"12:22","grado":"CORO"},{"nombre":"Alberta Fuentes Castillo","hora":"12:22","grado":"CORO"},{"nombre":"Eliseo Icazbalceta Bravo","hora":"13:11","grado":"CORO"},{"nombre":"Juan Daniel Zuñiga Durán","hora":"13:38","grado":"CORO"},{"nombre":"Liliana Salvador Zúñiga","hora":"13:38","grado":"CORO"}]},{"iglesia":"TULANCINGO - GUADALUPE","clave":"MXHG-04","count":40,"personas":[{"nombre":"Juan Emanuel Hernández Padilla","hora":"09:16","grado":"CORO"},{"nombre":"David Uziel Martinez de los Santos","hora":"13:02","grado":"CORO"},{"nombre":"Luis Hernández Ruiz","hora":"13:04","grado":"CORO"},{"nombre":"Sua Bigvaí Hernández Ruíz","hora":"13:04","grado":"CORO"},{"nombre":"Juana Ruiz Cortes","hora":"13:04","grado":"CORO"},{"nombre":"Karina Domínguez González","hora":"13:06","grado":"CORO"},{"nombre":"Salomón Ramos González","hora":"13:06","grado":"CORO"},{"nombre":"Sismai Villalba Lemus","hora":"13:07","grado":"CORO"},{"nombre":"Joacim Eluzai Cano Ramírez","hora":"13:08","grado":"CORO"},{"nombre":"Uziel Vargas Ricaño","hora":"13:08","grado":"CORO"},{"nombre":"Elisua Jaanai Cano Ramírez","hora":"13:10","grado":"CORO"},{"nombre":"Keren Alejandra Cano Ramirez","hora":"13:10","grado":"CORO"},{"nombre":"Pedro Cervantes Mendez","hora":"13:10","grado":"CORO"},{"nombre":"Noa Vera Castelán","hora":"13:11","grado":"CORO"},{"nombre":"Esther Ramos Flores","hora":"13:11","grado":"CORO"},{"nombre":"Sixta Montes Velasco","hora":"13:13","grado":"CORO"},{"nombre":"Claudia Abigail Rodríguez Montes","hora":"13:13","grado":"CORO"},{"nombre":"Quintina Ávila Cervantes","hora":"13:13","grado":"CORO"},{"nombre":"Ailyn Alejandra Domínguez González","hora":"13:13","grado":"CORO"},{"nombre":"Thelma Flores Muñoz","hora":"13:13","grado":"CORO"},{"nombre":"Sarai Gaspar Marcos","hora":"13:13","grado":"CORO"},{"nombre":"Esmeralda Grisel Castelán Huerta","hora":"13:13","grado":"CORO"},{"nombre":"María Apolinar García Montes","hora":"13:14","grado":"CORO"},{"nombre":"Alicia García Escalante","hora":"13:14","grado":"CORO"},{"nombre":"Azriel Elioenai Leyva Ramírez","hora":"13:14","grado":"CORO"},{"nombre":"Amsi Atalia Martinez de los Santos","hora":"13:14","grado":"CORO"},{"nombre":"Alejandra Lizbeth Ramírez Pérez","hora":"13:14","grado":"CORO"},{"nombre":"Uzai Elimelec Leyva Ramírez","hora":"13:14","grado":"CORO"},{"nombre":"Cristopher Ricardo Domínguez González","hora":"13:14","grado":"CORO"},{"nombre":"Ezer Atlai Pérez García","hora":"13:14","grado":"CORO"},{"nombre":"Etni Villalba Lemus","hora":"13:14","grado":"CORO"},{"nombre":"Keren De los Santos Flores","hora":"13:15","grado":"CORO"},{"nombre":"Marcelino Villalba Domínguez","hora":"13:15","grado":"CORO"},{"nombre":"Lea Anahi De los Santos Flores","hora":"13:15","grado":"CORO"},{"nombre":"Libni Raquel De los Santos Flores","hora":"13:15","grado":"CORO"},{"nombre":"Alma Lemus Olivo","hora":"13:15","grado":"CORO"},{"nombre":"Hazael Meza García","hora":"13:15","grado":"SUB DIRECTOR ESTATAL"},{"nombre":"Navor Rodríguez Sánchez","hora":"13:17","grado":"CORO"},{"nombre":"Rubén Israel Rodriguez Montes","hora":"13:19","grado":"CORO"},{"nombre":"Eduardo Cano Pérez","hora":"13:32","grado":"DIRECTOR ESTATAL"}]},{"iglesia":"SANTIAGO TULANTEPEC - PEDREGAL DE SAN JOSE","clave":"MXHG-06","count":23,"personas":[{"nombre":"Emilia Solis Canales","hora":"13:01","grado":"CORO"},{"nombre":"Angelica Martinez Garcia","hora":"13:01","grado":"CORO"},{"nombre":"Izhar Jimenez Martinez","hora":"13:02","grado":"CORO"},{"nombre":"Abisai Jimenez Martinez","hora":"13:07","grado":"CORO"},{"nombre":"Zurisadai Olivo Gonzalez","hora":"13:07","grado":"CORO"},{"nombre":"Evelyn Olivo Gonzalez","hora":"13:08","grado":"CORO"},{"nombre":"Sharol Olivo Gonzalez","hora":"13:08","grado":"CORO"},{"nombre":"Elizeth Gonzalez Castelan","hora":"13:08","grado":"CORO"},{"nombre":"Abdiel Cabrera Villalba","hora":"13:08","grado":"CORO"},{"nombre":"Eva Hernandez Ramirez","hora":"13:08","grado":"CORO"},{"nombre":"Xochitl Hernandez Gutierrez","hora":"13:08","grado":"CORO"},{"nombre":"Eimy Alexandra Hernandez Gutierrez","hora":"13:08","grado":"CORO"},{"nombre":"Merari Delgadillo Romo","hora":"13:09","grado":"CORO"},{"nombre":"Luciana Romo Lagos","hora":"13:09","grado":"CORO"},{"nombre":"Saul Rios Islas","hora":"13:09","grado":"CORO"},{"nombre":"Keila Ávila Hernandez","hora":"13:11","grado":"CORO"},{"nombre":"Zuri Madai Delgadillo Romo","hora":"13:11","grado":"CORO"},{"nombre":"Jose Rios Islas","hora":"13:12","grado":"CORO"},{"nombre":"Uziel Cruz Amador","hora":"13:12","grado":"CORO"},{"nombre":"Oscar Hernandez Cruz","hora":"13:12","grado":"DIRECTOR"},{"nombre":"Anayeli Hernandez Cruz","hora":"13:17","grado":"CORO"},{"nombre":"Alejandro Lagos Gutierrez","hora":"13:17","grado":"CORO"},{"nombre":"Adriel Lagos Hernandez","hora":"13:17","grado":"CORO"}]},{"iglesia":"TIZAYUCA - EL CARMEN","clave":"MXHG-15","count":20,"personas":[{"nombre":"Eunice Orozco Díaz","hora":"13:11","grado":"CORO"},{"nombre":"Magdalena Ramiro Hernández","hora":"13:12","grado":"CORO"},{"nombre":"Verónica Rosas Torres","hora":"13:12","grado":"CORO"},{"nombre":"Irene Hernández Sánchez","hora":"13:13","grado":"CORO"},{"nombre":"Antonia Garcia Hernández","hora":"13:13","grado":"CORO"},{"nombre":"Valeria betzabeth Juárez Rosas","hora":"13:13","grado":"CORO"},{"nombre":"Ana Belen Tolentino Hernández","hora":"13:13","grado":"CORO"},{"nombre":"Zimri Noemí Hernández Pérez","hora":"13:14","grado":"CORO"},{"nombre":"Keila Bethsabe Hernández Garcia","hora":"13:15","grado":"CORO"},{"nombre":"Alvino Hernández López","hora":"13:15","grado":"CORO"},{"nombre":"Luis Antonio Salas Granados","hora":"13:15","grado":"CORO"},{"nombre":"Anna Belem Díaz Cuz","hora":"13:15","grado":"CORO"},{"nombre":"Carlos Emerson Salinas Vázquez","hora":"13:15","grado":"CORO"},{"nombre":"María Eugenia Esquivel Aguilar","hora":"13:16","grado":"DIRECTOR"},{"nombre":"Moises Sebastián Hernández Garcia","hora":"13:16","grado":"CORO"},{"nombre":"Cynthia Salinas Vázquez","hora":"13:16","grado":"CORO"},{"nombre":"Ángel Dannte Lara Ramiro","hora":"13:16","grado":"CORO"},{"nombre":"Abdiel Aridai Hernández Orozco","hora":"13:16","grado":"CORO"},{"nombre":"Patricia Vázquez Guerrero","hora":"13:16","grado":"CORO"},{"nombre":"Abisai Santos Hernández","hora":"13:18","grado":"CORO"}]},{"iglesia":"ZIMAPAN - CENTRO","clave":"MXHG-07","count":18,"personas":[{"nombre":"Gloria Alvarado Moreno","hora":"13:04","grado":"CORO"},{"nombre":"Blanca Alvarado Moreno","hora":"13:04","grado":"CORO"},{"nombre":"Fernando Ramirez Velazquez","hora":"13:05","grado":"CORO"},{"nombre":"Yael Ramirez Velazquez","hora":"13:05","grado":"CORO"},{"nombre":"Santiago Alvarado Ramirez","hora":"13:05","grado":"CORO"},{"nombre":"Josue Emanuel Alvarado Cruz","hora":"13:05","grado":"CORO"},{"nombre":"Ricardo Enrique Alvarado Cruz","hora":"13:06","grado":"DIRECTOR"},{"nombre":"Damariz Zepeda Alvarez","hora":"13:06","grado":"CORO"},{"nombre":"Guadalupe Martinez","hora":"13:06","grado":"CORO"},{"nombre":"Leslye Anahí Lopez Carbajal","hora":"13:06","grado":"CORO"},{"nombre":"Azalia Betsabe Blanco Carrazco","hora":"13:06","grado":"CORO"},{"nombre":"Yolanda Cantera Bardales","hora":"13:07","grado":"CORO"},{"nombre":"Epifania Gonzalez Valencia","hora":"13:07","grado":"CORO"},{"nombre":"Pricilla Sanchez","hora":"13:07","grado":"CORO"},{"nombre":"Deni Noemi Alvarado Cruz","hora":"13:07","grado":"CORO"},{"nombre":"Diana Elisabeth Alvarado Cruz","hora":"13:07","grado":"CORO"},{"nombre":"Miguel Angel Arroyo","hora":"13:10","grado":"CORO"},{"nombre":"Angel Jezieel Rosales Aguilar","hora":"13:20","grado":"CORO"}]},{"iglesia":"HUEJUTLA - EL ZAPOTE","clave":"MXHG-05","count":14,"personas":[{"nombre":"Adelaido Antonio Hernandez Alvarado","hora":"13:32","grado":"DIRECTOR"},{"nombre":"Asuncion Paulita Mendez","hora":"13:38","grado":"CORO"},{"nombre":"Betzabe San Martin Bautista","hora":"13:39","grado":"CORO"},{"nombre":"Emili Aida Cruz Martinez","hora":"13:40","grado":"CORO"},{"nombre":"Grecia Vite Martinez","hora":"13:40","grado":"CORO"},{"nombre":"Jeazul Valdez Martinez","hora":"13:40","grado":"CORO"},{"nombre":"Merari Margarita Sanchez Ortiz","hora":"13:40","grado":"CORO"},{"nombre":"Daira Alejandra Amador Ramirez","hora":"13:40","grado":"CORO"},{"nombre":"Rahel Eunice Ortiz Zuñiga","hora":"13:40","grado":"CORO"},{"nombre":"Abigail Fuentes Delgado","hora":"13:40","grado":"CORO"},{"nombre":"Mireya Bautista Ramos","hora":"13:40","grado":"CORO"},{"nombre":"Jesus Amador Ramirez","hora":"13:40","grado":"CORO"},{"nombre":"Carlos Eduardo Bautista De La Cruz","hora":"13:40","grado":"CORO"},{"nombre":"Karla Rebeca Sanchez Ortiz","hora":"13:40","grado":"CORO"}]},{"iglesia":"HUASCA DE OCAMPO - EL TIZAL","clave":"MXHG-13","count":12,"personas":[{"nombre":"Juan Manuel Olivo Cervantes","hora":"13:02","grado":"CORO"},{"nombre":"Vasni Naasón Alvarez Olivo","hora":"13:02","grado":"CORO"},{"nombre":"Griselda Bezali Morales Olivo","hora":"13:02","grado":"CORO"},{"nombre":"Felipe Morales Olivo","hora":"13:02","grado":"CORO"},{"nombre":"Sarai Morales Olivo","hora":"13:02","grado":"DIRECTOR"},{"nombre":"Ruth Isabel García Soto","hora":"13:03","grado":"CORO"},{"nombre":"Marisela Cervantes Mendez","hora":"13:03","grado":"CORO"},{"nombre":"Betsua Getsemani Lòpez Rivera","hora":"13:03","grado":"CORO"},{"nombre":"Maria Martha Soto Castro","hora":"13:04","grado":"CORO"},{"nombre":"Adriana Rivera Solis","hora":"13:04","grado":"CORO"},{"nombre":"Catalina Olivo Cabrera","hora":"13:04","grado":"CORO"},{"nombre":"Gricelda Olivo Cabrera","hora":"13:04","grado":"CORO"}]},{"iglesia":"PUERTO DEXTHI","clave":"MXHG-17","count":10,"personas":[{"nombre":"Itzel Peña Zamora","hora":"13:01","grado":"CORO"},{"nombre":"Miriam Peña Zamora","hora":"13:01","grado":"CORO"},{"nombre":"Dominga Zamora Baltazar","hora":"13:01","grado":"CORO"},{"nombre":"Samantha Yamileth Cruz Ticante","hora":"13:02","grado":"CORO"},{"nombre":"Mayreli Tepetate Zamora","hora":"13:03","grado":"CORO"},{"nombre":"Sismai Narahi García Tesmallez","hora":"13:06","grado":"CORO"},{"nombre":"Abner Rivera Cruz","hora":"13:06","grado":"CORO"},{"nombre":"Job Rivera Barron","hora":"13:06","grado":"CORO"},{"nombre":"Alfonso Tepetate Zamora","hora":"13:07","grado":"CORO"},{"nombre":"Madelin Tepetate Zamora","hora":"13:07","grado":"DIRECTOR"}]},{"iglesia":"PACHUCA - PALMITAS","clave":"MXHG-20","count":9,"personas":[{"nombre":"Alma Carolina Reséndiz Hernández","hora":"13:12","grado":"CORO"},{"nombre":"Flor Noemi Reséndiz Hernández","hora":"13:12","grado":"CORO"},{"nombre":"Florencia Hernández Hernández","hora":"13:12","grado":"CORO"},{"nombre":"Zuri Zadai Serna Alvarado","hora":"13:14","grado":"CORO"},{"nombre":"Any Yoltzin Gutiérrez Hernández","hora":"13:14","grado":"CORO"},{"nombre":"Griselda Hernández","hora":"13:14","grado":"CORO"},{"nombre":"Zyanya Yeyetsi Gutiérrez Hernández","hora":"13:15","grado":"CORO"},{"nombre":"Tonalli Josué Gutiérrez Hernández","hora":"13:15","grado":"CORO"},{"nombre":"Alejo Gutiérrez Vite","hora":"13:15","grado":"DIRECTOR"}]},{"iglesia":"PACHUCA - NUEVA ESTRELLA","clave":"MXHG-09","count":9,"personas":[{"nombre":"Ana Cristina Moreno Cruz","hora":"13:18","grado":"CORO"},{"nombre":"Juan de Dios Hernandez Manzano","hora":"13:19","grado":"CORO"},{"nombre":"Zaret Sahar Solano Luna","hora":"13:19","grado":"CORO"},{"nombre":"Rosa Maria Hernandez Hernandez","hora":"13:19","grado":"CORO"},{"nombre":"Juana Cruz Gomez","hora":"13:20","grado":"CORO"},{"nombre":"Jocabeb Jimenez Vazquez","hora":"13:20","grado":"CORO"},{"nombre":"Dulce Beatriz Hernandez Desiderio","hora":"13:21","grado":"CORO"},{"nombre":"Amsi Ezbai Hernandez Cruz","hora":"13:21","grado":"CORO"},{"nombre":"Rut Elem Avila Hernandez","hora":"13:21","grado":"CORO"}]},{"iglesia":"EL SUSTO","clave":"MXHG-16","count":8,"personas":[{"nombre":"Hanna Elí Hernandez Vera","hora":"13:03","grado":"SUB DIRECTOR"},{"nombre":"Helen Saret Hernandez Vera","hora":"13:03","grado":"CORO"},{"nombre":"Estela Vargas Rodriguez","hora":"13:16","grado":"CORO"},{"nombre":"David Romo Vargas","hora":"13:16","grado":"CORO"},{"nombre":"Eliel Vargas Rodriguez","hora":"13:16","grado":"DIRECTOR"},{"nombre":"Alma De Los Santos","hora":"13:16","grado":"CORO"},{"nombre":"Abner Romo Vargas","hora":"13:17","grado":"CORO"},{"nombre":"Angelica Yedid Villalva Garcia","hora":"13:26","grado":"CORO"}]},{"iglesia":"CHAPATONGO - HUIZACHAL","clave":"MXHG-12","count":4,"personas":[{"nombre":"Zabdi Zareth Velazquez Santiago","hora":"13:01","grado":"DIRECTOR"},{"nombre":"David Mendieta Cruz","hora":"13:03","grado":"CORO"},{"nombre":"Erendira Sanchez Arias","hora":"13:05","grado":"CORO"},{"nombre":"Abigail Godínez Cruz","hora":"13:07","grado":"CORO"}]},{"iglesia":"MINERAL DE LA REFORMA - PROVIDENCIA","clave":"MXHG-21","count":4,"personas":[{"nombre":"Sadrac Sánchez Saldaña","hora":"13:13","grado":"CORO"},{"nombre":"Marcela Hernández Hernández","hora":"13:13","grado":"CORO"},{"nombre":"Zemira Carmi García Hernández","hora":"13:13","grado":"CORO"},{"nombre":"Ilse Yaneth Frayde Chavez","hora":"13:13","grado":"DIRECTOR"}]},{"iglesia":"TLAHUELILPAN - CENTRO","clave":"MXHG-02","count":4,"personas":[{"nombre":"Linda Paola Aguilar Mejía","hora":"13:21","grado":"CORO"},{"nombre":"Alejandro Trejo Díaz","hora":"13:26","grado":"CORO"},{"nombre":"Maria Dolores Mejía Martínez","hora":"13:26","grado":"CORO"},{"nombre":"Milca Arely Felix Meza Hernández","hora":"13:26","grado":"DIRECTOR"}]},{"iglesia":"HUAUTLA - BARRIO DEL SALTO","clave":"MXHG-18","count":4,"personas":[{"nombre":"Salatiel de la Cruz Hernández","hora":"13:41","grado":"SUB DIRECTOR"},{"nombre":"Onecima Hernández García","hora":"13:42","grado":"DIRECTOR"},{"nombre":"Juana de. La Cruz Hernández","hora":"13:42","grado":"CORO"},{"nombre":"Anel Valeria Gonzáles Medina","hora":"13:42","grado":"CORO"}]},{"iglesia":"TASQUILLO - CALVARIO BAJO","clave":"MXHG-08","count":3,"personas":[{"nombre":"Abigail Calixto Peña","hora":"13:01","grado":"DIRECTOR"},{"nombre":"Leticia Peña Chavez","hora":"13:01","grado":"CORO"},{"nombre":"Aarón Calixto Peña","hora":"13:07","grado":"CORO"}]}];
+var STAFF=[];
+var BL=["09:10", "09:20", "09:30", "10:10", "12:20", "13:00", "13:10", "13:20", "13:30", "13:40"];
+var BV=[11, 19, 10, 3, 5, 71, 81, 11, 6, 15];
+var SL=["09:00", "09:30", "10:00", "12:00", "13:00", "13:30"];
+var SV=[30, 10, 3, 5, 163, 21];
+var ROLES={"CORO": 214, "DIRECTOR": 14, "SUB DIRECTOR": 2, "SUB DIRECTOR ESTATAL": 1, "DIRECTOR ESTATAL": 1};
+var RETARDO_MIN=840;
+var TARDE_MIN=900;
+
+function tm(s){
+  var p=s.split(":");
+  return parseInt(p[0])*60+parseInt(p[1]);
+}
+function timeBadge(h){
+  var m=tm(h);
+  if(m>=TARDE_MIN) return '<span class="tl"><span class="dot dl"></span> '+h+'</span>';
+  if(m>=RETARDO_MIN) return '<span class="ta"><span class="dot da"></span> '+h+'</span>';
+  return '<span class="tn">'+h+'</span>';
+}
+function gradeBadge(g){
+  var gl=g.toUpperCase();
+  if(gl==="CORO") return '<span class="grado grado-coro">'+g+'</span>';
+  if(gl.indexOf("DIRECTOR")>=0) return '<span class="grado grado-dir">'+g+'</span>';
+  return '<span class="grado grado-staff">'+g+'</span>';
+}
+
+// Toggle iglesia rows
+document.querySelectorAll(".ig-hdr").forEach(function(hdr){
+  hdr.addEventListener("click", function(){
+    var row=this.closest(".ig-row");
+    row.classList.toggle("open");
+  });
+});
+
+// Build iglesia detail tables
+DATA.forEach(function(ig, i){
+  var det=document.getElementById("det-"+i);
+  if(!det) return;
+  var rows="";
+  ig.personas.forEach(function(p){
+    rows+='<tr><td>'+p.nombre+'</td><td class="tc">'+timeBadge(p.hora)+'</td><td class="tc">'+gradeBadge(p.grado)+'</td></tr>';
+  });
+  det.innerHTML='<table class="ig-table"><thead><tr><th>Nombre</th><th class="tc">Hora</th><th class="tc">Grado</th></tr></thead><tbody>'+rows+'</tbody></table>';
+});
+
+// Moving average
+function movAvg(d,w){
+  return d.map(function(_,i){
+    var s=Math.max(0,i-Math.floor(w/2));
+    var e=Math.min(d.length,s+w);
+    var sl=d.slice(s,e);
+    return Math.round(sl.reduce(function(a,b){return a+b;},0)/sl.length*10)/10;
+  });
+}
+
+// Bar colors by threshold
+function barColor(lbl){
+  var m=tm(lbl);
+  if(m>=TARDE_MIN) return "#c0392b";
+  if(m>=RETARDO_MIN) return "#b7770d";
+  return "#2e7d52";
+}
+var barColors=BL.map(function(l){return barColor(l);});
+
+// Chart 1: 10-min blocks (mixed bar+line)
+var ctx1=document.getElementById("chart10").getContext("2d");
+new Chart(ctx1,{
+  type:"bar",
+  data:{
+    labels:BL,
+    datasets:[
+      {
+        type:"bar",
+        label:"Entradas",
+        data:BV,
+        backgroundColor:barColors,
+        borderRadius:3,
+        order:2
+      },
+      {
+        type:"line",
+        label:"Tendencia (mov. avg.)",
+        data:movAvg(BV,3),
+        borderColor:"#c9a227",
+        backgroundColor:"rgba(201,162,39,.1)",
+        borderWidth:2.5,
+        pointRadius:3,
+        pointBackgroundColor:"#c9a227",
+        tension:.4,
+        fill:true,
+        order:1
+      }
+    ]
+  },
+  options:{
+    responsive:true,
+    maintainAspectRatio:false,
+    interaction:{mode:"index",intersect:false},
+    plugins:{
+      legend:{display:true,position:"bottom",labels:{boxWidth:10,font:{size:10}}},
+      tooltip:{
+        callbacks:{
+          title:function(ctx){return "Bloque "+ctx[0].label+" Hrs";},
+          label:function(ctx){return ctx.dataset.label+": "+ctx.parsed.y;}
+        }
+      }
+    },
+    scales:{
+      x:{ticks:{font:{size:9},maxRotation:45},grid:{display:false}},
+      y:{beginAtZero:true,ticks:{font:{size:9}},grid:{color:"rgba(0,0,0,.05)"}}
+    }
+  }
+});
+
+// Chart 2: 30-min slots
+function slotColor(lbl){
+  var m=tm(lbl);
+  if(m>=TARDE_MIN) return "#c0392b";
+  if(m>=RETARDO_MIN) return "#b7770d";
+  var ratio=Math.min((m-540)/240,1);
+  var r=Math.round(27+(46-27)*ratio);
+  var g=Math.round(94+(125-94)*ratio);
+  var b=Math.round(53+(82-53)*ratio);
+  return "rgb("+r+","+g+","+b+")";
+}
+var ctx2=document.getElementById("chart30").getContext("2d");
+new Chart(ctx2,{
+  type:"bar",
+  data:{
+    labels:SL,
+    datasets:[{
+      label:"Asistentes",
+      data:SV,
+      backgroundColor:SL.map(function(l){return slotColor(l);}),
+      borderRadius:4
+    }]
+  },
+  options:{
+    responsive:true,
+    maintainAspectRatio:false,
+    plugins:{
+      legend:{display:false},
+      tooltip:{
+        callbacks:{
+          title:function(ctx){return "Franja "+ctx[0].label+" Hrs";},
+          label:function(ctx){return "Asistentes: "+ctx.parsed.y;}
+        }
+      }
+    },
+    scales:{
+      x:{ticks:{font:{size:9}},grid:{display:false}},
+      y:{beginAtZero:true,ticks:{font:{size:9}},grid:{color:"rgba(0,0,0,.05)"}}
+    }
+  }
+});
+
+// Chart 3: Grado donut
+var roleKeys=Object.keys(ROLES);
+var roleVals=roleKeys.map(function(k){return ROLES[k];});
+var roleColors=roleKeys.map(function(k){
+  var u=k.toUpperCase();
+  if(u==="CORO") return "#2e7d52";
+  if(u.indexOf("DIRECTOR")>=0) return "#c9a227";
+  return "#9ca3af";
+});
+var ctx3=document.getElementById("chartGrado").getContext("2d");
+new Chart(ctx3,{
+  type:"doughnut",
+  data:{
+    labels:roleKeys,
+    datasets:[{
+      data:roleVals,
+      backgroundColor:roleColors,
+      borderWidth:2,
+      borderColor:"#fff"
+    }]
+  },
+  options:{
+    responsive:true,
+    maintainAspectRatio:false,
+    cutout:"60%",
+    plugins:{
+      legend:{position:"bottom",labels:{boxWidth:10,font:{size:10}}},
+      tooltip:{
+        callbacks:{
+          label:function(ctx){return ctx.label+": "+ctx.parsed+" personas";}
+        }
+      }
+    }
+  }
+});
+
+</script>
+</body>
+</html>

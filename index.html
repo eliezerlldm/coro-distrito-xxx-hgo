@@ -194,10 +194,30 @@
   </header>
 
   <div class="zonas" id="zonas">
-    <!-- Los distritos se agregarán aquí conforme se generen dashboards -->
-    <div style="text-align:center;color:#aaa;font-size:.9rem;padding:2rem 0;font-style:italic">
-      Próximamente — los dashboards aparecerán aquí al generarse.
+
+    <!-- Distrito XXX -->
+    <div class="zona-card open" onclick="toggle(this)">
+      <div class="zona-header">
+        <div class="zona-left">
+          <span class="zona-badge distrito">Distrito XXX</span>
+          <span class="zona-nombre">Coro Distrital XXX — Hidalgo</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:.75rem">
+          <span class="zona-count">1 reporte</span>
+          <span class="zona-chevron">▼</span>
+        </div>
+      </div>
+      <div class="zona-body">
+        <a class="dash-item" href="distrito-xxx/dashboard_asistencia_distroxxx_hgo_abr2026_26abr.html">
+          <div>
+            <div class="dash-fecha">26 de abril 2026</div>
+            <div class="dash-meta">232 asistentes · 16 iglesias · Abr 2026</div>
+          </div>
+          <span class="dash-arrow">Ver →</span>
+        </a>
+      </div>
     </div>
+
   </div>
 
   <footer>Control de Asistencia 2026 · Hidalgo</footer>
