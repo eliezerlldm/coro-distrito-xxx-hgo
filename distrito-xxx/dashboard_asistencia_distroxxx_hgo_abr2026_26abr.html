@@ -147,9 +147,8 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#f4f6f4;color:var(--
     <div class="chart-sub">Barras por volumen coloreadas por zona horaria · Línea dorada = tendencia (promedio móvil, ventana 3)</div>
     <div class="chart-wrap tall"><canvas id="chart10"></canvas></div>
     <div class="chart-legend">
-      <span><span class="dot dn"></span> Puntual (antes de 14:00 Hrs)</span>
-      <span><span class="dot da"></span> Retardo (≥ 14:00 Hrs)</span>
-      <span><span class="dot dl"></span> Tarde (≥ 15:00 Hrs)</span>
+      <span><span class="dot dn"></span> Puntual (antes de 13:20 Hrs)</span>
+      <span><span class="dot dl"></span> Tarde (≥ 13:20 Hrs)</span>
       <span><span class="dot dg"></span> Tendencia</span>
     </div>
   </div>
@@ -200,8 +199,7 @@ var BV=[11, 19, 10, 3, 5, 71, 81, 11, 6, 15];
 var SL=["09:00", "09:30", "10:00", "12:00", "13:00", "13:30"];
 var SV=[30, 10, 3, 5, 163, 21];
 var ROLES={"CORO": 214, "DIRECTOR": 14, "SUB DIRECTOR": 2, "SUB DIRECTOR ESTATAL": 1, "DIRECTOR ESTATAL": 1};
-var RETARDO_MIN=840;
-var TARDE_MIN=900;
+var TARDE_MIN=800;
 
 function tm(s){
   var p=s.split(":");
@@ -210,7 +208,6 @@ function tm(s){
 function timeBadge(h){
   var m=tm(h);
   if(m>=TARDE_MIN) return '<span class="tl"><span class="dot dl"></span> '+h+'</span>';
-  if(m>=RETARDO_MIN) return '<span class="ta"><span class="dot da"></span> '+h+'</span>';
   return '<span class="tn">'+h+'</span>';
 }
 function gradeBadge(g){
@@ -253,7 +250,6 @@ function movAvg(d,w){
 function barColor(lbl){
   var m=tm(lbl);
   if(m>=TARDE_MIN) return "#c0392b";
-  if(m>=RETARDO_MIN) return "#b7770d";
   return "#2e7d52";
 }
 var barColors=BL.map(function(l){return barColor(l);});
@@ -312,7 +308,6 @@ new Chart(ctx1,{
 function slotColor(lbl){
   var m=tm(lbl);
   if(m>=TARDE_MIN) return "#c0392b";
-  if(m>=RETARDO_MIN) return "#b7770d";
   var ratio=Math.min((m-540)/240,1);
   var r=Math.round(27+(46-27)*ratio);
   var g=Math.round(94+(125-94)*ratio);
