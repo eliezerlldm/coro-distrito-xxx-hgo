@@ -178,8 +178,25 @@
     }
 
     @media (max-width: 480px) {
-      header h1 { font-size: 1.3rem; }
-      .zona-nombre { font-size: .92rem; }
+      body { padding: 1.25rem .6rem; }
+      header { padding: 1.1rem 1rem; gap: .5rem; }
+      header h1 { font-size: 1.15rem; }
+      header p { font-size: .8rem; }
+      .logo-lldm-wrap { width: 60px; height: 60px; }
+      .logo-lldm { height: 44px; }
+      .zona-header { padding: .85rem 1rem; }
+      .zona-nombre { font-size: .85rem; }
+      .zona-badge { font-size: .62rem; padding: .2rem .55rem; }
+      .zona-count { font-size: .7rem; }
+      .dash-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: .3rem;
+        padding: .75rem 1rem;
+      }
+      .dash-fecha { font-size: .85rem; line-height: 1.3; }
+      .dash-meta { font-size: .72rem; line-height: 1.3; }
+      .dash-arrow { align-self: flex-end; font-size: .78rem; }
     }
   </style>
 </head>
@@ -203,7 +220,7 @@
           <span class="zona-nombre">Coro Distrital XXX — Hidalgo</span>
         </div>
         <div style="display:flex;align-items:center;gap:.75rem">
-          <span class="zona-count">5 reportes</span>
+          <span class="zona-count">3 reportes</span>
           <span class="zona-chevron">▼</span>
         </div>
       </div>
@@ -222,24 +239,10 @@
           </div>
           <span class="dash-arrow">Ver →</span>
         </a>
-        <a class="dash-item" href="distrito-xxx/dashboard_asistencia_distroxxx_hgo_estudios_estatales_regionales.html">
-          <div>
-            <div class="dash-fecha">Estudios Estatales y Regionales — 26 Abr a 02 Ago 2026</div>
-            <div class="dash-meta">2,389 asistentes · 12 fechas · rumbo a Santa Cena</div>
-          </div>
-          <span class="dash-arrow">Ver →</span>
-        </a>
         <a class="dash-item" href="distrito-xxx/dashboard_asistencia_distroxxx_hgo_local_abr_ago2026_por_iglesia.html">
           <div>
             <div class="dash-fecha">Asistencia local por iglesia — 06 Abr a 01 Ago 2026</div>
             <div class="dash-meta">8,371 registros · 15 iglesias · 107 fechas</div>
-          </div>
-          <span class="dash-arrow">Ver →</span>
-        </a>
-        <a class="dash-item" href="distrito-xxx/dashboard_asistencia_distroxxx_hgo_abr2026_26abr.html">
-          <div>
-            <div class="dash-fecha">26 de abril 2026</div>
-            <div class="dash-meta">232 asistentes · 16 iglesias · Abr 2026</div>
           </div>
           <span class="dash-arrow">Ver →</span>
         </a>
