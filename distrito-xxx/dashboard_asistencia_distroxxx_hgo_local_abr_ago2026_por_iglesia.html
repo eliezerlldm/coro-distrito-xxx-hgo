@@ -98,6 +98,22 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#f4f6f4;color:var(--
   body{padding:1rem .75rem;}
   canvas{max-height:180px;}
 }
+@media(max-width:480px){
+  .hdr{gap:.6rem;}
+  .hdr-title{font-size:1.25rem;}
+  .metrics{grid-template-columns:1fr 1fr;gap:.6rem;}
+  .mc{padding:.8rem .7rem;}
+  .mc-val{font-size:1.2rem;}
+  .ig-hdr{flex-wrap:wrap;gap:.4rem .6rem;padding:.6rem .7rem;}
+  .ig-bar-wrap{display:none;}
+  .ig-name{flex:1 1 100%;order:1;}
+  .ig-clave{order:0;}
+  .ig-count{order:2;min-width:auto;margin-left:auto;}
+  .ig-chev{order:3;}
+  .ig-table{font-size:.72rem;}
+  .ig-table th,.ig-table td{padding:.3rem .4rem;}
+  .sel-sede{white-space:normal;}
+}
 @media print{
   .btn-print,.accent-bar{display:none;}
   body{background:#fff;padding:.5rem;}
