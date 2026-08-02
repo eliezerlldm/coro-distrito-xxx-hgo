@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Asistencia Distrito XXX — HGO — Miércoles 08 Abr Servicio 6:00 pm</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+
+:root{
+  --gd:#1b5e35;--gm:#2e7d52;--gl:#e8f5ee;--gb:#a8d5b8;
+  --go:#c9a227;--gol:#fdf3d7;--gob:#e8cc7a;--god:#8a6d0b;
+  --am:#b7770d;--r:#c0392b;--tx:#1a1a1a;--mu:#6b7280;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:#f4f6f4;color:var(--tx);padding:1.5rem 1.25rem;}
+.accent-bar{height:4px;background:linear-gradient(90deg,#1b5e35,#2e7d52,#c9a227);border-radius:2px;margin-bottom:1.5rem;}
+/* Header */
+.hdr{display:flex;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;gap:1rem;margin-bottom:1.5rem;}
+.hdr-left{display:flex;flex-direction:column;gap:.45rem;}
+.hdr-eyebrow{font-size:.72rem;font-weight:700;letter-spacing:.12em;color:var(--gm);text-transform:uppercase;}
+.hdr-title{font-size:1.55rem;font-weight:800;line-height:1.15;color:var(--gd);}
+.hdr-title span{color:var(--go);}
+.hdr-pills{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.2rem;}
+.hdr-pill{display:inline-flex;align-items:center;gap:.35rem;padding:.28rem .75rem;border-radius:999px;font-size:.8rem;font-weight:700;}
+.pill-g{background:var(--gl);color:var(--gd);border:1px solid var(--gb);}
+.pill-o{background:var(--gol);color:var(--god);border:1px solid var(--gob);}
+.hdr-meta{font-size:.78rem;color:var(--mu);}
+.btn-print{display:inline-flex;align-items:center;gap:.4rem;padding:.45rem 1rem;background:var(--gol);color:var(--god);border:1px solid var(--gob);border-radius:8px;font-size:.8rem;font-weight:600;cursor:pointer;white-space:nowrap;}
+.btn-print:hover{background:var(--gob);}
+/* Metrics */
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1.5rem;}
+.mc{background:#fff;border-radius:12px;padding:1.1rem 1rem;box-shadow:0 1px 4px rgba(0,0,0,.06);border-left:4px solid var(--gm);}
+.mc.gold{border-left-color:var(--go);}
+.mc-lbl{font-size:.7rem;font-weight:600;color:var(--mu);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.35rem;}
+.mc-val{font-size:1.55rem;font-weight:800;color:var(--gd);}
+.mc.gold .mc-val{color:var(--god);}
+.mc-unit{font-size:.75rem;font-weight:600;color:var(--go);margin-left:.2rem;}
+/* Charts */
+.charts-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem;}
+.chart-card{background:#fff;border-radius:12px;padding:1.1rem 1rem;box-shadow:0 1px 4px rgba(0,0,0,.06);}
+.chart-card.full{grid-column:1/-1;}
+.chart-card.donut-card{grid-column:auto;}
+.chart-title{font-size:.82rem;font-weight:700;color:var(--gd);margin-bottom:.5rem;}
+.chart-sub{font-size:.7rem;color:var(--mu);margin-bottom:.75rem;}
+.chart-wrap{position:relative;height:220px;}
+.chart-wrap.tall{height:260px;}
+.chart-legend{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.6rem;font-size:.68rem;color:var(--mu);}
+.chart-legend span{display:inline-flex;align-items:center;gap:.3rem;}
+.dot{width:10px;height:10px;border-radius:50%;display:inline-block;}
+.dn{background:var(--gm);}
+.da{background:var(--am);}
+.dl{background:var(--r);}
+.dg{background:var(--go);}
+/* Iglesias */
+.section-title{font-size:.85rem;font-weight:700;color:var(--gd);margin-bottom:.75rem;display:flex;align-items:center;gap:.5rem;}
+.ig-hint{font-size:.72rem;color:var(--mu);font-weight:400;}
+.ig-list{display:flex;flex-direction:column;gap:.4rem;margin-bottom:1.5rem;}
+.ig-row{background:#fff;border-radius:10px;box-shadow:0 1px 3px rgba(0,0,0,.06);overflow:hidden;}
+.ig-hdr{display:flex;align-items:center;gap:.75rem;padding:.65rem .9rem;cursor:pointer;user-select:none;}
+.ig-hdr:hover{background:var(--gl);}
+.ig-clave{font-size:.68rem;font-weight:700;background:var(--gl);color:var(--gd);padding:.15rem .45rem;border-radius:4px;white-space:nowrap;}
+.ig-name{font-size:.85rem;font-weight:600;color:var(--tx);flex:1;}
+.ig-bar-wrap{flex:1;max-width:140px;height:6px;background:#e5e7eb;border-radius:3px;overflow:hidden;}
+.ig-bar{height:100%;background:var(--gm);border-radius:3px;}
+.ig-count{font-size:.82rem;font-weight:700;color:var(--gd);min-width:28px;text-align:right;}
+.ig-chev{font-size:.7rem;color:var(--mu);margin-left:.25rem;transition:transform .2s;}
+.ig-row.open .ig-chev{transform:rotate(180deg);}
+.ig-detail{display:none;border-top:1px solid #f0f0f0;}
+.ig-row.open .ig-detail{display:block;}
+.ig-table{width:100%;border-collapse:collapse;font-size:.78rem;}
+.ig-table th{background:var(--gl);color:var(--gd);font-weight:700;padding:.4rem .7rem;text-align:left;font-size:.68rem;text-transform:uppercase;letter-spacing:.05em;}
+.ig-table th.tc{text-align:center;}
+.ig-table td{padding:.38rem .7rem;border-bottom:1px solid #f5f5f5;color:var(--tx);}
+.ig-table td.tc{text-align:center;}
+.ig-table tr:last-child td{border-bottom:none;}
+.ig-table tr:hover td{background:#fafafa;}
+/* Hora badges */
+.tn{color:var(--mu);}
+.ta{color:var(--am);font-weight:600;}
+.tl{color:var(--r);font-weight:600;}
+/* Grado badges */
+.grado{font-size:.68rem;padding:.12rem .4rem;border-radius:4px;font-weight:600;}
+.grado-coro{background:var(--gl);color:var(--gd);}
+.grado-dir{background:var(--gol);color:var(--god);}
+.grado-staff{background:#f3f4f6;color:#374151;}
+/* Staff */
+.staff-section{background:var(--gol);border:1px solid var(--gob);border-radius:12px;padding:1.1rem 1rem;margin-bottom:1.5rem;}
+.staff-title{font-size:.82rem;font-weight:700;color:var(--god);margin-bottom:.75rem;text-transform:uppercase;letter-spacing:.07em;}
+.staff-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:.4rem;}
+.staff-item{display:flex;justify-content:space-between;font-size:.78rem;background:#fff8e7;border-radius:6px;padding:.35rem .6rem;}
+.staff-nombre{color:var(--tx);font-weight:500;}
+.staff-hora{color:var(--god);font-weight:700;}
+/* Duplicates notice */
+.dup-notice{background:#fff8e7;border:1px solid var(--gob);border-radius:8px;padding:.7rem 1rem;margin-bottom:1rem;font-size:.75rem;color:var(--god);}
+/* Responsive */
+@media(max-width:640px){
+  .metrics{grid-template-columns:repeat(2,1fr);}
+  .charts-row{grid-template-columns:1fr;}
+  .chart-card.donut-card{grid-column:auto;}
+  body{padding:1rem .75rem;}
+  canvas{max-height:180px;}
+}
+/* Print */
+@media print{
+  .btn-print,.accent-bar{display:none;}
+  body{background:#fff;padding:.5rem;}
+  .ig-detail{display:block!important;}
+  .ig-hdr{cursor:default;}
+  .mc{box-shadow:none;border:1px solid #e5e7eb;}
+  .chart-card{box-shadow:none;border:1px solid #e5e7eb;}
+  .ig-row{box-shadow:none;border:1px solid #e5e7eb;}
+  .charts-row{page-break-inside:avoid;}
+  .ig-list{gap:.25rem;}
+}
+
+</style>
+</head>
+<body>
+<div class="accent-bar"></div>
+<!-- HEADER -->
+<div class="hdr">
+  <div class="hdr-left">
+    <div class="hdr-eyebrow">Coro Distrital &nbsp;·&nbsp; Hidalgo</div>
+    <div class="hdr-title">Asistencia &nbsp;<span>Miércoles 08 Abr &mdash; Servicio 6:00 pm</span></div>
+    <div class="hdr-pills">
+      <span class="hdr-pill pill-g">30 asistentes</span>
+      <span class="hdr-pill pill-o">1 iglesias</span>
+    </div>
+    <div class="hdr-meta">Inicio: 18:00 Hrs &nbsp;·&nbsp; Primer registro: 20:19 Hrs &nbsp;·&nbsp; Último: 21:33 Hrs</div>
+  </div>
+  <button class="btn-print" onclick="window.print()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>Imprimir / PDF</button>
+</div>
+
+<!-- METRICS -->
+<div class="metrics">
+  <div class="mc"><div class="mc-lbl">Total asistentes</div><div class="mc-val">30</div></div>
+  <div class="mc"><div class="mc-lbl">Iglesias</div><div class="mc-val">1</div></div>
+  <div class="mc gold"><div class="mc-lbl">Promedio de entrada</div><div class="mc-val">20:27 <span class="mc-unit">Hrs</span></div></div>
+  <div class="mc gold"><div class="mc-lbl">Bloque pico</div><div class="mc-val">20:20 <span class="mc-unit">Hrs</span></div></div>
+</div>
+
+<!-- CHARTS ROW 1 -->
+<div class="charts-row">
+  <div class="chart-card full">
+    <div class="chart-title">Entradas por bloque de 10 minutos</div>
+    <div class="chart-sub">Barras por volumen coloreadas por zona horaria · Línea dorada = tendencia (promedio móvil, ventana 3)</div>
+    <div class="chart-wrap tall"><canvas id="chart10"></canvas></div>
+    <div class="chart-legend">
+      <span><span class="dot dn"></span> Puntual (antes de 18:20 Hrs)</span>
+      <span><span class="dot dl"></span> Tarde (≥ 18:20 Hrs)</span>
+      <span><span class="dot dg"></span> Tendencia</span>
+    </div>
+  </div>
+</div>
+
+<!-- CHARTS ROW 2 -->
+<div class="charts-row">
+  <div class="chart-card">
+    <div class="chart-title">Entradas por franja de 30 minutos</div>
+    <div class="chart-sub">Total de personas por período</div>
+    <div class="chart-wrap"><canvas id="chart30"></canvas></div>
+  </div>
+  <div class="chart-card donut-card">
+    <div class="chart-title">Distribución por grado</div>
+    <div class="chart-sub">Composición de la sesión</div>
+    <div class="chart-wrap"><canvas id="chartGrado"></canvas></div>
+  </div>
+</div>
+
+<!-- IGLESIAS -->
+<div class="section-title">Iglesias <span class="ig-hint">&mdash; clic en una iglesia para ver sus asistentes</span></div>
+<div class="ig-list">
+<div class="ig-row"><div class="ig-hdr"><span class="ig-clave">MXHG-03</span><span class="ig-name">Pachuca - San Cayetano</span><div class="ig-bar-wrap"><div class="ig-bar" style="width:100%"></div></div><span class="ig-count">30</span><span class="ig-chev">▼</span></div><div class="ig-detail" id="det-0"></div></div>
+</div>
+
+
+
+<script>
+var DATA=[{"iglesia": "PACHUCA - SAN CAYETANO", "clave": "MXHG-03", "count": 30, "personas": [{"nombre": "Jepthé Icazbalceta Flores", "hora": "20:19", "grado": "CORO"}, {"nombre": "Eliseo Icazbalceta Bravo", "hora": "20:19", "grado": "CORO"}, {"nombre": "Amsi Bigvai Lugo Serrano", "hora": "20:19", "grado": "CORO"}, {"nombre": "Abelina Jimenez Lopez", "hora": "20:20", "grado": "CORO"}, {"nombre": "Ana Karen Serrano Godínez", "hora": "20:20", "grado": "CORO"}, {"nombre": "Brenda Flores López", "hora": "20:20", "grado": "CORO"}, {"nombre": "Vihaney Kereli Rosales Sanchez", "hora": "20:20", "grado": "CORO"}, {"nombre": "Everarda Martínez Hernández", "hora": "20:20", "grado": "CORO"}, {"nombre": "Itamar Leyva Martínez", "hora": "20:20", "grado": "CORO"}, {"nombre": "Loammi Ferrusca Arriaga", "hora": "20:20", "grado": "CORO"}, {"nombre": "Harim Rosmar Bustos Gonzalez", "hora": "20:21", "grado": "CORO"}, {"nombre": "Vasti Elienai Hernández Icazbalceta", "hora": "20:21", "grado": "CORO"}, {"nombre": "Leonor Hernández Vargas", "hora": "20:21", "grado": "CORO"}, {"nombre": "Belen Madai Flores Hernández", "hora": "20:22", "grado": "CORO"}, {"nombre": "Maria Dolores Ortega López", "hora": "20:22", "grado": "CORO"}, {"nombre": "Patricia Lopéz Gutierrez", "hora": "20:22", "grado": "CORO"}, {"nombre": "Sonia Bravo Avila", "hora": "20:22", "grado": "CORO"}, {"nombre": "Noa Belem Alvarado de la Cruz", "hora": "20:22", "grado": "CORO"}, {"nombre": "Berenice Romero Velázquez", "hora": "20:22", "grado": "CORO"}, {"nombre": "Ismael García Jiménez", "hora": "20:23", "grado": "CORO"}, {"nombre": "Noe Vergara Pérez", "hora": "20:30", "grado": "CORO"}, {"nombre": "Amsi Ezbai Gonzáles Molina", "hora": "20:30", "grado": "CORO"}, {"nombre": "Alba Hernández Cruz", "hora": "20:31", "grado": "CORO"}, {"nombre": "Elisua Hernández Arenas", "hora": "20:31", "grado": "CORO"}, {"nombre": "Daniel Abinoam Tolentino Hernández", "hora": "20:31", "grado": "DIRECTOR"}, {"nombre": "Alfonso Vite Hernandez", "hora": "20:32", "grado": "CORO"}, {"nombre": "Aida Araceli Alvarado Avíla", "hora": "20:38", "grado": "CORO"}, {"nombre": "Betzabe Eunice Flores Hernández", "hora": "20:38", "grado": "CORO"}, {"nombre": "Jadua Leyva Martínez", "hora": "20:38", "grado": "CORO"}, {"nombre": "Anacleta Perez Aguilar", "hora": "21:33", "grado": "CORO"}]}];
+var STAFF=[];
+var BL=["20:10", "20:20", "20:30", "21:30"];
+var BV=[3, 17, 9, 1];
+var SL=["20:00", "20:30", "21:30"];
+var SV=[20, 9, 1];
+var ROLES={"CORO": 29, "DIRECTOR": 1};
+var TARDE_MIN=1100;
+
+function tm(s){
+  var p=s.split(":");
+  return parseInt(p[0])*60+parseInt(p[1]);
+}
+function timeBadge(h){
+  var m=tm(h);
+  if(m>=TARDE_MIN) return '<span class="tl"><span class="dot dl"></span> '+h+'</span>';
+  return '<span class="tn">'+h+'</span>';
+}
+function gradeBadge(g){
+  var gl=g.toUpperCase();
+  if(gl==="CORO") return '<span class="grado grado-coro">'+g+'</span>';
+  if(gl.indexOf("DIRECTOR")>=0) return '<span class="grado grado-dir">'+g+'</span>';
+  return '<span class="grado grado-staff">'+g+'</span>';
+}
+
+// Toggle iglesia rows
+document.querySelectorAll(".ig-hdr").forEach(function(hdr){
+  hdr.addEventListener("click", function(){
+    var row=this.closest(".ig-row");
+    row.classList.toggle("open");
+  });
+});
+
+// Build iglesia detail tables
+DATA.forEach(function(ig, i){
+  var det=document.getElementById("det-"+i);
+  if(!det) return;
+  var rows="";
+  ig.personas.forEach(function(p){
+    rows+='<tr><td>'+p.nombre+'</td><td class="tc">'+timeBadge(p.hora)+'</td><td class="tc">'+gradeBadge(p.grado)+'</td></tr>';
+  });
+  det.innerHTML='<table class="ig-table"><thead><tr><th>Nombre</th><th class="tc">Hora</th><th class="tc">Grado</th></tr></thead><tbody>'+rows+'</tbody></table>';
+});
+
+// Moving average
+function movAvg(d,w){
+  return d.map(function(_,i){
+    var s=Math.max(0,i-Math.floor(w/2));
+    var e=Math.min(d.length,s+w);
+    var sl=d.slice(s,e);
+    return Math.round(sl.reduce(function(a,b){return a+b;},0)/sl.length*10)/10;
+  });
+}
+
+// Bar colors by threshold
+function barColor(lbl){
+  var m=tm(lbl);
+  if(m>=TARDE_MIN) return "#c0392b";
+  return "#2e7d52";
+}
+var barColors=BL.map(function(l){return barColor(l);});
+
+// Chart 1: 10-min blocks (mixed bar+line)
+var ctx1=document.getElementById("chart10").getContext("2d");
+new Chart(ctx1,{
+  type:"bar",
+  data:{
+    labels:BL,
+    datasets:[
+      {
+        type:"bar",
+        label:"Entradas",
+        data:BV,
+        backgroundColor:barColors,
+        borderRadius:3,
+        order:2
+      },
+      {
+        type:"line",
+        label:"Tendencia (mov. avg.)",
+        data:movAvg(BV,3),
+        borderColor:"#c9a227",
+        backgroundColor:"rgba(201,162,39,.1)",
+        borderWidth:2.5,
+        pointRadius:3,
+        pointBackgroundColor:"#c9a227",
+        tension:.4,
+        fill:true,
+        order:1
+      }
+    ]
+  },
+  options:{
+    responsive:true,
+    maintainAspectRatio:false,
+    interaction:{mode:"index",intersect:false},
+    plugins:{
+      legend:{display:true,position:"bottom",labels:{boxWidth:10,font:{size:10}}},
+      tooltip:{
+        callbacks:{
+          title:function(ctx){return "Bloque "+ctx[0].label+" Hrs";},
+          label:function(ctx){return ctx.dataset.label+": "+ctx.parsed.y;}
+        }
+      }
+    },
+    scales:{
+      x:{ticks:{font:{size:9},maxRotation:45},grid:{display:false}},
+      y:{beginAtZero:true,ticks:{font:{size:9}},grid:{color:"rgba(0,0,0,.05)"}}
+    }
+  }
+});
+
+// Chart 2: 30-min slots
+function slotColor(lbl){
+  var m=tm(lbl);
+  if(m>=TARDE_MIN) return "#c0392b";
+  var ratio=Math.min((m-540)/240,1);
+  var r=Math.round(27+(46-27)*ratio);
+  var g=Math.round(94+(125-94)*ratio);
+  var b=Math.round(53+(82-53)*ratio);
+  return "rgb("+r+","+g+","+b+")";
+}
+var ctx2=document.getElementById("chart30").getContext("2d");
+new Chart(ctx2,{
+  type:"bar",
+  data:{
+    labels:SL,
+    datasets:[{
+      label:"Asistentes",
+      data:SV,
+      backgroundColor:SL.map(function(l){return slotColor(l);}),
+      borderRadius:4
+    }]
+  },
+  options:{
+    responsive:true,
+    maintainAspectRatio:false,
+    plugins:{
+      legend:{display:false},
+      tooltip:{
+        callbacks:{
+          title:function(ctx){return "Franja "+ctx[0].label+" Hrs";},
+          label:function(ctx){return "Asistentes: "+ctx.parsed.y;}
+        }
+      }
+    },
+    scales:{
+      x:{ticks:{font:{size:9}},grid:{display:false}},
+      y:{beginAtZero:true,ticks:{font:{size:9}},grid:{color:"rgba(0,0,0,.05)"}}
+    }
+  }
+});
+
+// Chart 3: Grado donut
+var roleKeys=Object.keys(ROLES);
+var roleVals=roleKeys.map(function(k){return ROLES[k];});
+var roleColors=roleKeys.map(function(k){
+  var u=k.toUpperCase();
+  if(u==="CORO") return "#2e7d52";
+  if(u.indexOf("DIRECTOR")>=0) return "#c9a227";
+  return "#9ca3af";
+});
+var ctx3=document.getElementById("chartGrado").getContext("2d");
+new Chart(ctx3,{
+  type:"doughnut",
+  data:{
+    labels:roleKeys,
+    datasets:[{
+      data:roleVals,
+      backgroundColor:roleColors,
+      borderWidth:2,
+      borderColor:"#fff"
+    }]
+  },
+  options:{
+    responsive:true,
+    maintainAspectRatio:false,
+    cutout:"60%",
+    plugins:{
+      legend:{position:"bottom",labels:{boxWidth:10,font:{size:10}}},
+      tooltip:{
+        callbacks:{
+          label:function(ctx){return ctx.label+": "+ctx.parsed+" personas";}
+        }
+      }
+    }
+  }
+});
+
+</script>
+</body>
+</html>
