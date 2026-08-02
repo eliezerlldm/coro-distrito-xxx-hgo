@@ -189,6 +189,9 @@ table.part tr.detail-row td{background:#fafbfa;padding:.6rem 1.2rem;}
       <select id="filter-grado" class="filter-select">
         <option value="todos">Todos los grados</option>
       </select>
+      <select id="filter-iglesia" class="filter-select">
+        <option value="todos">Todas las iglesias</option>
+      </select>
       <span class="filter-count" id="filter-count"></span>
     </div>
 
@@ -313,11 +316,13 @@ function applyFilters(){
   var q=normalize(document.getElementById("search-input").value.trim());
   var estado=document.getElementById("filter-estado").value;
   var grado=document.getElementById("filter-grado").value;
+  var iglesia=document.getElementById("filter-iglesia").value;
   var filtered=currentMembers.filter(function(m){
     if(q && normalize(m.nombre).indexOf(q)===-1) return false;
     if(estado==="aprobado" && !m.aprobado) return false;
     if(estado==="noaprobado" && m.aprobado) return false;
     if(grado!=="todos" && m.grado!==grado) return false;
+    if(iglesia!=="todos" && m.clave!==iglesia) return false;
     return true;
   });
   renderRowsRaw(filtered, currentShowIglesia);
@@ -337,6 +342,16 @@ function populateGradoFilter(){
   grados.forEach(function(g){
     var opt=document.createElement("option");
     opt.value=g; opt.textContent=g;
+    sel.appendChild(opt);
+  });
+}
+
+function populateIglesiaFilter(){
+  var sel=document.getElementById("filter-iglesia");
+  var ordenadas=IGLESIAS.slice().sort(function(a,b){ return a.iglesia.localeCompare(b.iglesia); });
+  ordenadas.forEach(function(ig){
+    var opt=document.createElement("option");
+    opt.value=ig.clave; opt.textContent=ig.iglesia;
     sel.appendChild(opt);
   });
 }
@@ -408,9 +423,11 @@ document.querySelectorAll(".sel-row").forEach(function(row){
 });
 
 populateGradoFilter();
+populateIglesiaFilter();
 document.getElementById("search-input").addEventListener("input", applyFilters);
 document.getElementById("filter-estado").addEventListener("change", applyFilters);
 document.getElementById("filter-grado").addEventListener("change", applyFilters);
+document.getElementById("filter-iglesia").addEventListener("change", applyFilters);
 
 renderIglesia("noaprobados");
 
