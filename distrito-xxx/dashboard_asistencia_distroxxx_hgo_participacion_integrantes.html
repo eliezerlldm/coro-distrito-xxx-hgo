@@ -64,6 +64,11 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#f4f6f4;color:var(--
 .mc.gold .mc-val{color:var(--god);}
 .mc.red .mc-val{color:var(--r);}
 .tbl-card{background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,.06);overflow:hidden;}
+.filter-bar{display:flex;gap:.6rem;flex-wrap:wrap;align-items:center;margin-bottom:.85rem;}
+.search-input{flex:1;min-width:180px;padding:.5rem .8rem;border:1px solid var(--gb);border-radius:8px;font-size:.82rem;font-family:inherit;color:var(--tx);background:#fff;}
+.search-input:focus{outline:none;border-color:var(--gm);}
+.filter-select{padding:.5rem .7rem;border:1px solid var(--gb);border-radius:8px;font-size:.8rem;font-family:inherit;color:var(--tx);background:#fff;}
+.filter-count{font-size:.76rem;color:var(--mu);white-space:nowrap;margin-left:auto;}
 table.part{width:100%;border-collapse:collapse;font-size:.8rem;}
 table.part th{background:var(--gl);color:var(--gd);font-weight:700;padding:.5rem .7rem;text-align:left;font-size:.68rem;text-transform:uppercase;letter-spacing:.05em;}
 table.part th.tc{text-align:center;}
@@ -174,6 +179,19 @@ table.part tr.detail-row td{background:#fafbfa;padding:.6rem 1.2rem;}
       <div class="mc red"><div class="mc-lbl" id="det-lbl3">No aprobados estatal</div><div class="mc-val" id="det-m3">0</div></div>
     </div>
 
+    <div class="filter-bar">
+      <input type="text" id="search-input" class="search-input" placeholder="Buscar por nombre...">
+      <select id="filter-estado" class="filter-select">
+        <option value="todos">Todos los estados</option>
+        <option value="aprobado">Solo aprobados</option>
+        <option value="noaprobado">Solo no aprobados</option>
+      </select>
+      <select id="filter-grado" class="filter-select">
+        <option value="todos">Todos los grados</option>
+      </select>
+      <span class="filter-count" id="filter-count"></span>
+    </div>
+
     <div class="tbl-card">
       <table class="part" id="part-table">
         <thead><tr>
@@ -253,7 +271,7 @@ function detalleHtml(m){
   return summary+'<table class="ig-table"><thead><tr><th>Fecha</th><th>Sede</th><th class="tc">Estado</th></tr></thead><tbody>'+rows+'</tbody></table>';
 }
 
-function renderRows(miembros, showIglesia){
+function renderRowsRaw(miembros, showIglesia){
   var html="";
   var ncols = showIglesia ? 6 : 5;
   miembros.forEach(function(m, i){
@@ -271,6 +289,7 @@ function renderRows(miembros, showIglesia){
     html+='<tr class="detail-row" id="'+rid+'" style="display:none;"><td></td><td colspan="'+(ncols-1)+'">'+detalleHtml(m)+'</td></tr>';
   });
   document.getElementById("part-tbody").innerHTML=html;
+  document.getElementById("filter-count").textContent=miembros.length+" resultado"+(miembros.length===1?"":"s");
   document.querySelectorAll(".clickable-row").forEach(function(row){
     row.addEventListener("click", function(){
       var rid=this.getAttribute("data-target");
@@ -280,6 +299,45 @@ function renderRows(miembros, showIglesia){
       det.style.display = open ? "none" : "table-row";
       chev.innerHTML = open ? "&#9656;" : "&#9662;";
     });
+  });
+}
+
+var currentMembers=[];
+var currentShowIglesia=false;
+
+function normalize(s){
+  return (s||"").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"");
+}
+
+function applyFilters(){
+  var q=normalize(document.getElementById("search-input").value.trim());
+  var estado=document.getElementById("filter-estado").value;
+  var grado=document.getElementById("filter-grado").value;
+  var filtered=currentMembers.filter(function(m){
+    if(q && normalize(m.nombre).indexOf(q)===-1) return false;
+    if(estado==="aprobado" && !m.aprobado) return false;
+    if(estado==="noaprobado" && m.aprobado) return false;
+    if(grado!=="todos" && m.grado!==grado) return false;
+    return true;
+  });
+  renderRowsRaw(filtered, currentShowIglesia);
+}
+
+function renderRows(miembros, showIglesia){
+  currentMembers=miembros;
+  currentShowIglesia=showIglesia;
+  applyFilters();
+}
+
+function populateGradoFilter(){
+  var grados=[];
+  ALL_MEMBERS.forEach(function(m){ if(m.grado && grados.indexOf(m.grado)===-1) grados.push(m.grado); });
+  grados.sort();
+  var sel=document.getElementById("filter-grado");
+  grados.forEach(function(g){
+    var opt=document.createElement("option");
+    opt.value=g; opt.textContent=g;
+    sel.appendChild(opt);
   });
 }
 
@@ -348,6 +406,11 @@ document.querySelectorAll(".sel-row").forEach(function(row){
     renderIglesia(special.indexOf(idx)>=0 ? idx : parseInt(idx));
   });
 });
+
+populateGradoFilter();
+document.getElementById("search-input").addEventListener("input", applyFilters);
+document.getElementById("filter-estado").addEventListener("change", applyFilters);
+document.getElementById("filter-grado").addEventListener("change", applyFilters);
 
 renderIglesia("noaprobados");
 
