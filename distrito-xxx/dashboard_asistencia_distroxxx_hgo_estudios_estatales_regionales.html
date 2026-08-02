@@ -27,6 +27,9 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#f4f6f4;color:var(--
 .hdr-meta{font-size:.78rem;color:var(--mu);}
 .btn-print{display:inline-flex;align-items:center;gap:.4rem;padding:.45rem 1rem;background:var(--gol);color:var(--god);border:1px solid var(--gob);border-radius:8px;font-size:.8rem;font-weight:600;cursor:pointer;white-space:nowrap;}
 .btn-print:hover{background:var(--gob);}
+.btn-back{display:inline-flex;align-items:center;gap:.4rem;padding:.45rem 1rem;background:#fff;color:var(--gd);border:1px solid var(--gb);border-radius:8px;font-size:.8rem;font-weight:600;text-decoration:none;white-space:nowrap;}
+.btn-back:hover{background:var(--gl);}
+.hdr-actions{display:flex;gap:.5rem;flex-wrap:wrap;}
 .metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1.25rem;}
 .mc{background:#fff;border-radius:12px;padding:1.1rem 1rem;box-shadow:0 1px 4px rgba(0,0,0,.06);border-left:4px solid var(--gm);}
 .mc.gold{border-left-color:var(--go);}
@@ -116,7 +119,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#f4f6f4;color:var(--
     </div>
     <div class="hdr-meta">Periodo: 26 Abr 2026 (Dom) &nbsp;&mdash;&nbsp; 02 Ago 2026 (Dom) &nbsp;·&nbsp; Rumbo a Santa Cena — Concierto Centenario</div>
   </div>
-  <button class="btn-print" onclick="window.print()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>Imprimir / PDF</button>
+  <div class="hdr-actions"><a class="btn-back" href="../index.html">&larr; Inicio</a><button class="btn-print" onclick="window.print()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>Imprimir / PDF</button></div>
 </div>
 
 <div class="layout">

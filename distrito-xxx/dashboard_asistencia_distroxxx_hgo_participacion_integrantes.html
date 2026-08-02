@@ -27,6 +27,9 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#f4f6f4;color:var(--
 .hdr-meta{font-size:.78rem;color:var(--mu);}
 .btn-print{display:inline-flex;align-items:center;gap:.4rem;padding:.45rem 1rem;background:var(--gol);color:var(--god);border:1px solid var(--gob);border-radius:8px;font-size:.8rem;font-weight:600;cursor:pointer;white-space:nowrap;}
 .btn-print:hover{background:var(--gob);}
+.btn-back{display:inline-flex;align-items:center;gap:.4rem;padding:.45rem 1rem;background:#fff;color:var(--gd);border:1px solid var(--gb);border-radius:8px;font-size:.8rem;font-weight:600;text-decoration:none;white-space:nowrap;}
+.btn-back:hover{background:var(--gl);}
+.hdr-actions{display:flex;gap:.5rem;flex-wrap:wrap;}
 .layout{display:grid;grid-template-columns:300px 1fr;gap:1.25rem;align-items:start;}
 .sidebar{background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,.06);padding:.6rem;max-height:82vh;overflow-y:auto;position:sticky;top:1rem;}
 .sidebar-title{font-size:.68rem;font-weight:700;color:var(--gd);text-transform:uppercase;letter-spacing:.06em;padding:.6rem .5rem .3rem;}
@@ -116,7 +119,7 @@ table.part tr.row-ok td{background:#f3faf5;}
     </div>
     <div class="hdr-meta">Estatal/Regional = % de fechas esperadas para su iglesia, 90% requerido para Santa Cena &nbsp;·&nbsp; Local = % de sesiones que su iglesia realizó</div>
   </div>
-  <button class="btn-print" onclick="window.print()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>Imprimir / PDF</button>
+  <div class="hdr-actions"><a class="btn-back" href="../index.html">&larr; Inicio</a><button class="btn-print" onclick="window.print()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>Imprimir / PDF</button></div>
 </div>
 
 <div class="layout">
