@@ -130,11 +130,14 @@ table.part tr.detail-row td{background:#fafbfa;padding:.6rem 1.2rem;}
   .sel-sede{white-space:normal;}
 }
 @media print{
-  .btn-print,.accent-bar{display:none;}
+  *{ -webkit-print-color-adjust:exact; print-color-adjust:exact; color-adjust:exact; }
+  .btn-print,.btn-back,.accent-bar,.sidebar,.filter-bar{display:none;}
   body{background:#fff;padding:.5rem;}
-  .mc,.tbl-card,.sidebar{box-shadow:none;border:1px solid #e5e7eb;}
+  .mc,.tbl-card{box-shadow:none;border:1px solid #e5e7eb;}
   .layout{grid-template-columns:1fr;}
-  .sidebar{max-height:none;position:static;}
+  table.part tr.row-alert td{background:var(--rl)!important;}
+  table.part tr.row-ok td{background:#fff!important;}
+  table.part tr.detail-row td{background:var(--rl);}
 }
 
 </style>
